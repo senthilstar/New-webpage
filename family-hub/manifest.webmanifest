@@ -1,0 +1,10 @@
+{
+  "name": "Family Hub",
+  "short_name": "Family Hub",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f1",
+  "theme_color": "#153d3a",
+  "description": "A private, browser-first family hub for tasks, diary, planning, learning and household admin."
+}
