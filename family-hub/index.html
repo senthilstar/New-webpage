@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#153d3a" />
   <meta name="color-scheme" content="light dark" />
   <meta name="description" content="A private, browser-first family hub for tasks, diary, planning, learning and household admin." />
-  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23176b67'/%3E%3Cpath d='M13 31 32 15l19 16v20a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4Z' fill='white' opacity='.95'/%3E%3Cpath d='M25 55V38h14v17' fill='%23f5c35f'/%3E%3C/svg%3E" />
   <title>Family Hub</title>
   <style>
@@ -244,7 +244,7 @@
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
   function showView(v){document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v+'View'));window.scrollTo({top:document.querySelector('.utility').offsetTop-6,behavior:'smooth'})}
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installBtn.hidden=false});installBtn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installBtn.hidden=true});
-  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 
   const now=new Date();todayLabel.textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);diaryDate.value=todayISO();
   quickCategory.innerHTML=categories.map(c=>`<option value="${c.id}">${esc(displayCat(c))}</option>`).join('');
