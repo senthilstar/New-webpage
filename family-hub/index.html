@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#153d3a" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="A private, browser-first family hub for tasks, diary, planning, learning and household admin." />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23176b67'/%3E%3Cpath d='M13 31 32 15l19 16v20a4 4 0 0 1-4 4H17a4 4 0 0 1-4-4Z' fill='white' opacity='.95'/%3E%3Cpath d='M25 55V38h14v17' fill='%23f5c35f'/%3E%3C/svg%3E" />
+  <title>Family Hub</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Lora:ital,wght@0,600;1,600&display=swap');
+    :root{
+      color-scheme: light dark;
+      --ink:#17302f; --muted:#667775; --paper:#f4f6f1; --surface:#fff; --line:#dce3de;
+      --teal:#176b67; --teal-soft:#dcefeb; --coral:#d96149; --coral-soft:#fae7e0;
+      --mustard:#c88b18; --mustard-soft:#f7ebc9; --blue:#326d9f; --blue-soft:#e0ebf4;
+      --rose:#a9506a; --rose-soft:#f3e2e8; --violet:#7455a7; --violet-soft:#ebe4f5;
+      --shadow:0 18px 45px rgba(23,48,47,.09); --radius:20px; --safe-bottom:env(safe-area-inset-bottom,0px);
+    }
+    @media(prefers-color-scheme:dark){:root{
+      --ink:#eef7f3; --muted:#aebeba; --paper:#0f1817; --surface:#172321; --line:#30403c;
+      --teal:#75ccc1; --teal-soft:#183b37; --coral:#ff9b83; --coral-soft:#4a2924;
+      --mustard:#e7b84f; --mustard-soft:#413516; --blue:#8fc4ed; --blue-soft:#203747;
+      --rose:#eca3b7; --rose-soft:#442a33; --violet:#c3a8f4; --violet-soft:#312845;
+      --shadow:0 18px 48px rgba(0,0,0,.28)
+    }}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+    button,input,select,textarea{font:inherit;color:inherit} button{cursor:pointer} a{color:inherit}
+    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--teal) 55%,transparent);outline-offset:2px}
+    .app{max-width:1360px;margin:auto;padding:24px clamp(16px,3vw,42px) 76px}
+    .mast{display:grid;grid-template-columns:1.18fr .82fr;gap:18px;margin-bottom:20px}
+    .intro{min-height:292px;background:#163331;color:#f5f8f3;border-radius:30px 30px 12px 30px;padding:clamp(26px,4vw,56px);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow)}
+    .intro:after{content:"";position:absolute;width:300px;height:300px;border:52px solid #d7a13a;border-radius:50%;right:-130px;top:-140px;opacity:.82}
+    .intro small{font-weight:700;color:#d6e1dd;position:relative;z-index:1}.intro h1{font:600 clamp(2.25rem,5vw,4.7rem)/1.02 Lora,serif;letter-spacing:-.045em;margin:34px 0 14px;max-width:800px;position:relative;z-index:1}.intro p{margin:0;color:#d9e5e0;max-width:700px;font-size:1.08rem;position:relative;z-index:1}
+    .snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:17px;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--shadow)}.stat:nth-child(1){background:var(--teal-soft);border-radius:28px 14px 14px 14px}.stat:nth-child(3){background:var(--coral-soft)}.stat:nth-child(6){background:var(--mustard-soft);border-radius:14px 14px 28px 14px}.number{font:600 2.1rem/1 Lora,serif}.label{color:var(--muted);font-size:.92rem}
+    .utility{position:sticky;top:0;z-index:30;margin:0 -8px 22px;padding:10px 8px;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(14px);display:flex;align-items:center;gap:10px}.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:5px;box-shadow:0 6px 20px rgba(20,46,44,.06)}.tab{border:0;background:transparent;border-radius:10px;padding:10px 15px;font-weight:700;color:var(--muted)}.tab[aria-selected="true"]{background:var(--ink);color:var(--paper)}.utility-actions{margin-left:auto;display:flex;gap:8px}
+    .btn{border:1px solid var(--line);background:var(--surface);padding:10px 14px;border-radius:11px;font-weight:700;display:inline-flex;align-items:center;gap:8px;text-decoration:none;justify-content:center}.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}.btn.soft{background:var(--teal-soft);border-color:transparent;color:var(--teal)}.btn.danger{color:var(--coral)}.btn:disabled{opacity:.55;cursor:not-allowed}
+    .view{display:none}.view.active{display:block}.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3vw,28px);box-shadow:0 8px 24px rgba(20,46,44,.045)}.panel h2,.composer h2,.entries h2,.setting-card h2{font:600 1.55rem/1.2 Lora,serif;margin:0 0 6px}.hint{margin:0 0 18px;color:var(--muted)}
+    .quick-panel{display:grid;grid-template-columns:minmax(170px,.8fr) minmax(280px,1.5fr) minmax(145px,.65fr) auto;gap:10px;align-items:end;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:16px;box-shadow:0 8px 24px rgba(20,46,44,.045)}.quick-title{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;align-items:baseline}.quick-title h2{font:600 1.35rem Lora,serif;margin:0}.quick-title p{margin:0;color:var(--muted);font-size:.9rem}.quick-field label,.form-group label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px}
+    input[type="text"],input[type="search"],input[type="date"],input[type="number"],select,textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px 14px}textarea{resize:vertical;line-height:1.55}.home-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:18px}.area-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.area-card{border:0;border-radius:15px;padding:16px;text-align:left;background:var(--paper);min-height:108px;display:flex;flex-direction:column;justify-content:space-between}.area-card strong{font:600 1.75rem Lora,serif}.area-card span{color:var(--muted);font-weight:700}.focus-strip{margin-top:16px;display:grid;grid-template-columns:1.2fr .8fr;gap:10px}.focus-card{border-radius:16px;padding:16px;background:var(--teal-soft)}.focus-card.alt{background:var(--mustard-soft)}.focus-card h3{margin:0 0 6px;font:600 1.08rem Lora,serif}.focus-card p{margin:0;color:var(--muted)}.week-note{margin-top:16px;border:1px dashed var(--line);border-radius:14px;padding:14px}.week-note label{display:block;font-weight:700;margin-bottom:6px}.week-note textarea{min-height:92px}.week-note .row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}.priority-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}.priority-list li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.priority-list li:last-child{border:0}.dot{width:9px;height:9px;border-radius:50%;background:var(--teal)}.priority-list small{color:var(--muted)}
+    .section-title{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:30px 0 14px}.section-title h2{font:600 clamp(1.55rem,3vw,2.25rem) Lora,serif;margin:0;letter-spacing:-.025em}.section-title p{margin:0;color:var(--muted)}.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:16px}.search{flex:1;position:relative}.search:before{content:"⌕";position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}.search input{padding-left:40px}.filter{width:auto;min-width:150px}.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.category{--accent:var(--teal);--accent-soft:var(--teal-soft);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;min-width:0}.cat-head{padding:17px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}.cat-icon{width:39px;height:39px;border-radius:12px;background:var(--accent-soft);display:grid;place-items:center;font-size:1.35rem}.cat-title{flex:1;min-width:0}.cat-title h3{margin:0;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cat-title span{font-size:.8rem;color:var(--muted)}.progress{font-weight:700;color:var(--accent);font-size:.78rem}.task-list{list-style:none;margin:0;padding:4px 10px 10px}.task{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 8px;border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent)}.task:last-child{border-bottom:0}.check{appearance:none;width:20px;height:20px;border:2px solid var(--accent);border-radius:6px;display:grid;place-content:center;margin:0}.check:checked{background:var(--accent)}.check:checked:after{content:"";width:9px;height:5px;border-left:2px solid var(--paper);border-bottom:2px solid var(--paper);transform:rotate(-45deg) translateY(-1px)}.task.done .task-name{text-decoration:line-through;color:var(--muted)}.task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}.chip{font-size:.71rem;padding:2px 6px;border-radius:999px;background:var(--paper);color:var(--muted);font-weight:700}.chip.overdue{background:var(--coral-soft);color:var(--coral)}.chip.soon{background:var(--mustard-soft);color:var(--mustard)}.icon-btn{border:0;background:transparent;color:var(--muted);padding:6px;border-radius:8px}.icon-btn:hover{background:var(--coral-soft);color:var(--coral)}.add-row{margin-top:auto;padding:10px 12px 14px}.add-task{width:100%;border:1px dashed var(--line);background:transparent;border-radius:10px;padding:9px 12px;text-align:left;color:var(--muted);font-weight:700}.empty{grid-column:1/-1;text-align:center;padding:56px 20px;background:var(--surface);border:1px dashed var(--line);border-radius:18px}.empty h3{font:600 1.45rem Lora,serif;margin:0 0 8px}.empty p{margin:0;color:var(--muted)}
+    .composer-layout{display:grid;grid-template-columns:minmax(290px,.72fr) minmax(0,1.28fr);gap:18px}.composer,.entries,.setting-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3vw,30px)}.composer{align-self:start;position:sticky;top:84px}.form-group{margin-bottom:14px}.form-group textarea{min-height:160px}.form-actions{display:flex;gap:8px;justify-content:flex-end}.entry-list{display:grid;gap:12px}.entry{border-top:1px solid var(--line);padding:18px 0 6px}.entry:first-child{border-top:0;padding-top:0}.entry-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.entry time{font-weight:700;color:var(--teal)}.entry p{white-space:pre-wrap;line-height:1.6;margin:10px 0}.entry-kind{font-size:.78rem;color:var(--muted)}.entry img{max-width:100%;max-height:360px;display:block;object-fit:contain;border-radius:12px;background:var(--paper);margin:12px 0}.entry audio{width:100%;margin:12px 0}.entry-actions{display:flex;gap:6px}
+    .mind-grid{display:grid;grid-template-columns:minmax(300px,.75fr) minmax(0,1.25fr);gap:18px}.capture-stack{display:grid;gap:12px}.capture-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--paper)}.capture-card h3{margin:0 0 7px;font:600 1.08rem Lora,serif}.capture-card p{margin:0 0 12px;color:var(--muted)}.mind-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.filebox{border:1px dashed var(--line);border-radius:12px;padding:14px;text-align:center;position:relative;color:var(--muted);font-weight:700}.filebox input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}.recording{color:var(--coral)!important;border-color:var(--coral)!important}.attachment-preview{display:none;margin-top:10px;font-size:.85rem;color:var(--teal);font-weight:700;word-break:break-word}.attachment-preview.show{display:block}.mood-row{display:flex;gap:8px;flex-wrap:wrap}.mood-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 11px}.mood-btn.selected{border-color:var(--teal);background:var(--teal-soft);color:var(--teal)}
+    .more-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.setting-card p{color:var(--muted);line-height:1.55}.setting-actions{display:flex;gap:10px;flex-wrap:wrap}.setting-actions .btn{flex:1;min-width:130px}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini-list{display:grid;gap:8px;margin-top:14px}.mini-row{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.mini-row strong{flex:1}.badge{font-size:.72rem;padding:3px 7px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-weight:700}
+    .dialog{border:0;padding:0;border-radius:18px;background:var(--surface);color:var(--ink);width:min(92vw,480px);box-shadow:0 24px 90px rgba(0,0,0,.3)}.dialog::backdrop{background:rgba(7,18,17,.62)}.dialog form{padding:24px}.dialog h2{font:600 1.5rem Lora,serif;margin:0 0 8px}.dialog p{margin:0 0 18px;color:var(--muted)}.dialog-menu{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.toast{position:fixed;right:20px;bottom:20px;background:var(--ink);color:var(--paper);padding:12px 16px;border-radius:11px;box-shadow:var(--shadow);z-index:90;transform:translateY(100px);opacity:0;transition:.25s}.toast.show{transform:none;opacity:1}.notice{background:var(--blue-soft);border-radius:13px;padding:13px 15px;color:var(--ink);margin-bottom:16px}.notice strong{color:var(--blue)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:1000px){.mast{grid-template-columns:1fr}.snapshot{grid-template-columns:repeat(6,1fr)}.stat{min-height:100px}.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-grid{grid-template-columns:1fr}.quick-panel{grid-template-columns:1fr 1fr}.quick-title{grid-column:1/-1}.mind-grid{grid-template-columns:1fr}}
+    @media(max-width:720px){body{padding-bottom:92px}.app{padding:14px 12px 36px}.view{padding-bottom:110px}.mast{gap:10px}.intro{min-height:170px;padding:20px;border-radius:27px}.intro h1{font-size:2rem;margin:16px 0 8px}.intro p{font-size:.94rem}.intro:after{width:185px;height:185px;border-width:34px;right:-72px;top:-85px}.snapshot{grid-template-columns:repeat(3,1fr)}.stat{padding:11px;min-height:74px;border-radius:18px!important}.number{font-size:1.7rem}.label{font-size:.77rem}.utility{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;padding:8px 10px calc(8px + var(--safe-bottom));background:color-mix(in srgb,var(--surface) 94%,transparent);border-top:1px solid var(--line);z-index:80}.tabs{width:100%;display:grid;grid-template-columns:repeat(5,1fr);border:0;box-shadow:none;padding:0;background:transparent}.tab{padding:9px 3px 7px;font-size:.7rem}.tab:before{content:attr(data-symbol);display:block;font-size:1.18rem;line-height:1;margin-bottom:5px}.utility-actions{display:none}.quick-panel{grid-template-columns:1fr}.quick-title{grid-column:auto;display:block}.quick-title p{margin-top:4px}.area-grid{grid-template-columns:repeat(2,1fr)}.focus-strip{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:stretch}.filter{width:100%}.category-grid{grid-template-columns:1fr}.composer-layout{grid-template-columns:1fr}.composer{position:static}.section-title{align-items:flex-start;flex-direction:column;gap:5px}.mind-options,.more-grid,.profile-grid{grid-template-columns:1fr}.toast{left:12px;right:12px;bottom:96px;text-align:center}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <section class="mast" aria-labelledby="welcome-title">
+    <div class="intro">
+      <small id="todayLabel"></small>
+      <div><h1 id="welcome-title">Your family, one calm view.</h1><p>Tasks, learning, household admin and memories — organized without turning family life into another inbox.</p></div>
+    </div>
+    <div class="snapshot" aria-label="Overview">
+      <article class="stat"><span class="number" id="doneCount">0</span><span class="label">done</span></article>
+      <article class="stat"><span class="number" id="openCount">0</span><span class="label">pending</span></article>
+      <article class="stat"><span class="number" id="overdueCount">0</span><span class="label">overdue</span></article>
+      <article class="stat"><span class="number" id="familyCount">0</span><span class="label">family</span></article>
+      <article class="stat"><span class="number" id="academicCount">0</span><span class="label">learning</span></article>
+      <article class="stat"><span class="number" id="weekCount">0</span><span class="label">this week</span></article>
+    </div>
+  </section>
+
+  <nav class="utility" aria-label="Hub sections">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-view="home" data-symbol="⌂">Home</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="tasks" data-symbol="☷">Lists</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="diary" data-symbol="✎">Diary</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="mindspace" data-symbol="◉">Mindspace</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="more" data-symbol="•••">More</button>
+    </div>
+    <div class="utility-actions"><button class="btn" id="installBtn" hidden>Install app</button><button class="btn" id="backupTop">Backup</button></div>
+  </nav>
+
+  <section id="homeView" class="view active" role="tabpanel">
+    <form class="quick-panel" id="quickForm">
+      <div class="quick-title"><h2>Quick actions</h2><p>Capture the next thing before it slips away.</p></div>
+      <div class="quick-field"><label for="quickCategory">Area</label><select id="quickCategory"></select></div>
+      <div class="quick-field"><label for="quickTask">Task</label><input id="quickTask" type="text" placeholder="Add a clear next step…" required /></div>
+      <div class="quick-field"><label for="quickDue">Due date</label><input id="quickDue" type="date" /></div>
+      <button class="btn primary" type="submit">Add task</button>
+    </form>
+
+    <div class="home-grid">
+      <article class="panel">
+        <h2>Areas at a glance</h2><p class="hint">Open work across family life.</p>
+        <div class="area-grid">
+          <button class="area-card" type="button" data-open-filter="family"><strong id="homeFamily">0</strong><span>Family</span></button>
+          <button class="area-card" type="button" data-open-filter="academic"><strong id="homeAcademic">0</strong><span>Learning</span></button>
+          <button class="area-card" type="button" data-open-filter="admin"><strong id="homeAdmin">0</strong><span>Admin</span></button>
+          <button class="area-card" type="button" data-open-filter="week"><strong id="homeWeek">0</strong><span>This week</span></button>
+        </div>
+        <div class="focus-strip">
+          <div class="focus-card"><h3>Family focus</h3><p id="familyFocus">Choose one small thing that makes the home easier this week.</p></div>
+          <div class="focus-card alt"><h3>Learning focus</h3><p id="learningFocus">Keep one playful learning goal visible for each child.</p></div>
+        </div>
+        <div class="week-note"><label for="weeklyReview">Weekly planning review</label><textarea id="weeklyReview" placeholder="This week’s focus, calls, school items, household admin, family plans…"></textarea><div class="row"><button class="btn" id="saveReview" type="button">Save</button><button class="btn" id="downloadReview" type="button">Download</button></div></div>
+      </article>
+      <article class="panel"><h2>Next up</h2><p class="hint">A calm shortlist from your open items.</p><ul class="priority-list" id="priorityList"></ul></article>
+    </div>
+  </section>
+
+  <section id="tasksView" class="view" role="tabpanel">
+    <div class="toolbar">
+      <div class="search"><label class="sr-only" for="searchInput">Search tasks</label><input type="search" id="searchInput" placeholder="Search people, tasks or categories…" /></div>
+      <label class="sr-only" for="statusFilter">Filter tasks</label><select class="filter" id="statusFilter"><option value="all">All tasks</option><option value="open">Open only</option><option value="done">Completed</option><option value="overdue">Overdue</option></select>
+    </div>
+    <div class="notice"><strong>Tip:</strong> keep this list for family logistics. Private clinical information should stay in your clinical systems, not in this hub.</div>
+    <div id="categorySections"></div>
+  </section>
+
+  <section id="diaryView" class="view" role="tabpanel">
+    <div class="composer-layout">
+      <article class="composer"><h2>A page for today</h2><p class="hint">A win, a worry, something funny, or one thing worth remembering.</p>
+        <form id="diaryForm"><div class="form-group"><label for="diaryDate">Date</label><input type="date" id="diaryDate" required /></div><div class="form-group"><label for="diaryText">Diary entry</label><textarea id="diaryText" placeholder="What happened today?" required></textarea></div><div class="form-actions"><button class="btn primary" type="submit">Add to diary</button></div></form>
+      </article>
+      <article class="entries"><h2>Diary pages</h2><p class="hint">Newest entries appear first. Saved only in this browser unless you export a backup.</p><div class="entry-list" id="diaryEntries"></div></article>
+    </div>
+  </section>
+
+  <section id="mindspaceView" class="view" role="tabpanel">
+    <div class="mind-grid">
+      <article class="panel">
+        <h2>Mindspace</h2><p class="hint">Low-friction capture for thoughts, photos, voice notes and ideas.</p>
+        <div class="capture-stack">
+          <div class="capture-card"><h3>How does today feel?</h3><p>No scoring — just a gentle marker.</p><div class="mood-row" id="moodRow"><button class="mood-btn" data-mood="bright">☀ Bright</button><button class="mood-btn" data-mood="steady">◌ Steady</button><button class="mood-btn" data-mood="busy">↯ Busy</button><button class="mood-btn" data-mood="heavy">☁ Heavy</button></div></div>
+          <form class="capture-card" id="mindForm"><h3>Capture a thought</h3><p>Write a note and optionally attach one small photo or audio clip.</p><div class="form-group"><label for="mindText">Note</label><textarea id="mindText" placeholder="An idea, memory, plan, gratitude, worry…" style="min-height:120px"></textarea></div><div class="mind-options"><label class="filebox">Add photo<input id="mindImage" type="file" accept="image/*" /></label><button class="filebox" id="recordBtn" type="button">Record voice</button></div><div id="attachmentPreview" class="attachment-preview"></div><div class="form-actions" style="margin-top:12px"><button class="btn primary" type="submit">Save to mindspace</button></div></form>
+        </div>
+      </article>
+      <article class="entries"><h2>Captured moments</h2><p class="hint">Notes and small media stay on this device.</p><div class="entry-list" id="mindEntries"></div></article>
+    </div>
+  </section>
+
+  <section id="moreView" class="view" role="tabpanel">
+    <div class="more-grid">
+      <article class="setting-card"><h2>Family labels</h2><p>Use short names or nicknames. They are stored only in this browser.</p><div class="profile-grid"><div class="form-group"><label>Adult 1</label><input id="adult1" type="text" placeholder="You" /></div><div class="form-group"><label>Adult 2</label><input id="adult2" type="text" placeholder="Partner" /></div><div class="form-group"><label>Child 1</label><input id="child1" type="text" placeholder="Child 1" /></div><div class="form-group"><label>Child 2</label><input id="child2" type="text" placeholder="Child 2" /></div></div><div class="setting-actions"><button class="btn primary" id="saveProfiles">Save labels</button></div></article>
+      <article class="setting-card"><h2>Household admin</h2><p>Add recurring bills, insurance, subscriptions or school payments without storing account numbers.</p><form id="commitmentForm"><div class="profile-grid"><div class="form-group"><label for="commitName">Item</label><input id="commitName" type="text" placeholder="Insurance / school fee / subscription" required /></div><div class="form-group"><label for="commitMonth">Due</label><input id="commitMonth" type="text" placeholder="Jan / quarterly / 12 Mar" /></div></div><div class="form-actions"><button class="btn primary" type="submit">Add</button></div></form><div class="mini-list" id="commitmentList"></div></article>
+      <article class="setting-card"><h2>Backup & restore</h2><p>Export tasks, diary, mindspace and settings as JSON. Keep the backup in your own secure storage.</p><div class="setting-actions"><button class="btn" id="exportBtn">Export backup</button><label class="btn" style="position:relative;overflow:hidden">Import backup<input id="importFile" type="file" accept="application/json" style="position:absolute;inset:0;opacity:0;cursor:pointer" /></label></div></article>
+      <article class="setting-card"><h2>Privacy & reset</h2><p>This static site has no server database. Data is browser-local. Clearing browser storage removes it unless you exported a backup.</p><div class="setting-actions"><button class="btn danger" id="resetBtn">Reset local data</button></div></article>
+    </div>
+  </section>
+</main>
+
+<dialog class="dialog" id="taskDialog"><form method="dialog" id="taskDialogForm"><h2 id="dialogTitle">Add task</h2><p id="dialogHint">Add a clear next action.</p><div class="form-group"><label for="dialogTaskName">Task</label><input id="dialogTaskName" type="text" required /></div><div class="form-group"><label for="dialogTaskDue">Due date</label><input id="dialogTaskDue" type="date" /></div><input id="dialogCategory" type="hidden" /><div class="dialog-menu"><button class="btn" value="cancel">Cancel</button><button class="btn primary" id="dialogSave" value="default">Save</button></div></form></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const KEY='familyHub.v3';
+  const todayISO=()=>new Date().toISOString().slice(0,10);
+  const categories=[
+    {id:'family',name:'Family',icon:'⌂',group:'family',accent:'var(--teal)',soft:'var(--teal-soft)'},
+    {id:'partner',name:'Partner',icon:'♡',group:'family',accent:'var(--rose)',soft:'var(--rose-soft)'},
+    {id:'child1',name:'Child 1',icon:'★',group:'family academic',accent:'var(--mustard)',soft:'var(--mustard-soft)'},
+    {id:'child2',name:'Child 2',icon:'✦',group:'family academic',accent:'var(--blue)',soft:'var(--blue-soft)'},
+    {id:'learning',name:'Learning & School',icon:'▤',group:'academic',accent:'var(--violet)',soft:'var(--violet-soft)'},
+    {id:'home',name:'Home & Errands',icon:'⌁',group:'admin',accent:'var(--teal)',soft:'var(--teal-soft)'},
+    {id:'financials',name:'Bills & Financials',icon:'₹',group:'admin',accent:'var(--mustard)',soft:'var(--mustard-soft)'},
+    {id:'subscriptions',name:'Subscriptions',icon:'↻',group:'admin',accent:'var(--coral)',soft:'var(--coral-soft)'},
+    {id:'parents',name:'Parents & Relatives',icon:'♧',group:'family',accent:'var(--blue)',soft:'var(--blue-soft)'},
+    {id:'health',name:'Health & Exercise',icon:'◒',group:'family',accent:'var(--teal)',soft:'var(--teal-soft)'},
+    {id:'personal',name:'Personal & Leisure',icon:'☼',group:'family',accent:'var(--rose)',soft:'var(--rose-soft)'},
+    {id:'workadmin',name:'Work Admin',icon:'◇',group:'admin',accent:'var(--violet)',soft:'var(--violet-soft)'}
+  ];
+  const blank=()=>({tasks:[],diary:[],mind:[],weeklyReview:'',profiles:{adult1:'You',adult2:'Partner',child1:'Child 1',child2:'Child 2'},commitments:[],mood:{date:'',value:''}});
+  let state=load(); let pendingAttachment=null; let mediaRecorder=null; let chunks=[]; let installPrompt=null;
+
+  function load(){try{const p=JSON.parse(localStorage.getItem(KEY));return {...blank(),...p,profiles:{...blank().profiles,...(p?.profiles||{})}}}catch{return blank()}}
+  function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+  function uid(){return crypto?.randomUUID?.() || Date.now().toString(36)+Math.random().toString(36).slice(2)}
+  function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1900)}
+  function esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  function cat(id){return categories.find(c=>c.id===id)||categories[0]}
+  function profileName(id){return state.profiles[id]||cat(id).name}
+  function displayCat(c){if(c.id==='partner')return state.profiles.adult2||'Partner';if(c.id==='child1')return state.profiles.child1||'Child 1';if(c.id==='child2')return state.profiles.child2||'Child 2';return c.name}
+  function dueState(date){if(!date)return '';const now=todayISO();if(date<now)return 'overdue';const d=(new Date(date+'T12:00:00')-new Date(now+'T12:00:00'))/86400000;return d<=3?'soon':''}
+  function inWeek(date){if(!date)return false;const a=new Date(todayISO()+'T12:00:00'),b=new Date(date+'T12:00:00');const days=(b-a)/86400000;return days>=0&&days<=7}
+  function fmtDate(d){if(!d)return '';return new Intl.DateTimeFormat(undefined,{day:'numeric',month:'short',year:'numeric'}).format(new Date(d+'T12:00:00'))}
+
+  function renderAll(){renderStats();renderHome();renderTasks();renderDiary();renderMind();renderMore();}
+  function renderStats(){
+    const open=state.tasks.filter(t=>!t.done), done=state.tasks.filter(t=>t.done), overdue=open.filter(t=>dueState(t.due)==='overdue');
+    document.getElementById('doneCount').textContent=done.length;document.getElementById('openCount').textContent=open.length;document.getElementById('overdueCount').textContent=overdue.length;
+    document.getElementById('familyCount').textContent=open.filter(t=>cat(t.category).group.includes('family')).length;
+    document.getElementById('academicCount').textContent=open.filter(t=>cat(t.category).group.includes('academic')).length;
+    document.getElementById('weekCount').textContent=open.filter(t=>inWeek(t.due)).length;
+  }
+  function renderHome(){
+    const open=state.tasks.filter(t=>!t.done);const family=open.filter(t=>cat(t.category).group.includes('family')).length;const academic=open.filter(t=>cat(t.category).group.includes('academic')).length;const admin=open.filter(t=>cat(t.category).group.includes('admin')).length;const week=open.filter(t=>inWeek(t.due)).length;
+    homeFamily.textContent=family;homeAcademic.textContent=academic;homeAdmin.textContent=admin;homeWeek.textContent=week;weeklyReview.value=state.weeklyReview||'';
+    const focusFamily=open.find(t=>cat(t.category).group.includes('family'));const focusLearn=open.find(t=>cat(t.category).group.includes('academic'));familyFocus.textContent=focusFamily?focusFamily.name:'Choose one small thing that makes the home easier this week.';learningFocus.textContent=focusLearn?focusLearn.name:'Keep one playful learning goal visible for each child.';
+    const rank=open.slice().sort((a,b)=>{const ad=a.due||'9999-99-99',bd=b.due||'9999-99-99';return ad.localeCompare(bd)||b.created.localeCompare(a.created)}).slice(0,7);
+    priorityList.innerHTML=rank.length?rank.map(t=>`<li><span class="dot"></span><span>${esc(t.name)}<small style="display:block">${esc(displayCat(cat(t.category)))}</small></span><small>${t.due?fmtDate(t.due):'Anytime'}</small></li>`).join(''):'<li><span class="dot"></span><span>Nothing urgent. Add one useful next step.</span><small>Clear</small></li>';
+  }
+  function renderTasks(){
+    const q=(searchInput.value||'').trim().toLowerCase(), status=statusFilter.value;let html='<div class="category-grid">';let visible=0;
+    for(const c of categories){let tasks=state.tasks.filter(t=>t.category===c.id);tasks=tasks.filter(t=>{if(status==='open'&&t.done)return false;if(status==='done'&&!t.done)return false;if(status==='overdue'&&(t.done||dueState(t.due)!=='overdue'))return false;return !q||(t.name+' '+displayCat(c)).toLowerCase().includes(q)});if(q&&tasks.length===0)continue;visible++;
+      const all=state.tasks.filter(t=>t.category===c.id),done=all.filter(t=>t.done).length;html+=`<article class="category" style="--accent:${c.accent};--accent-soft:${c.soft}"><div class="cat-head"><div class="cat-icon">${c.icon}</div><div class="cat-title"><h3>${esc(displayCat(c))}</h3><span>${all.length} item${all.length===1?'':'s'}</span></div><span class="progress">${done}/${all.length||0}</span></div><ul class="task-list">${tasks.map(taskHtml).join('')||'<li style="padding:15px;color:var(--muted)">No matching items.</li>'}</ul><div class="add-row"><button class="add-task" data-add-cat="${c.id}">+ Add item</button></div></article>`;
+    }
+    if(!visible)html+='<div class="empty"><h3>No matches</h3><p>Try a different search or filter.</p></div>';html+='</div>';categorySections.innerHTML=html;
+  }
+  function taskHtml(t){const ds=dueState(t.due),due=t.due?`<span class="chip ${ds}">${ds==='overdue'?'Overdue · ':ds==='soon'?'Soon · ':''}${fmtDate(t.due)}</span>`:'';return `<li class="task ${t.done?'done':''}"><input class="check" type="checkbox" data-toggle="${t.id}" ${t.done?'checked':''} aria-label="Complete ${esc(t.name)}"><div><div class="task-name">${esc(t.name)}</div><div class="task-meta">${due}</div></div><button class="icon-btn" data-delete="${t.id}" aria-label="Delete">✕</button></li>`}
+  function renderDiary(){const list=state.diary.slice().sort((a,b)=>(b.date+b.created).localeCompare(a.date+a.created));diaryEntries.innerHTML=list.length?list.map(e=>`<article class="entry"><div class="entry-top"><div><time>${fmtDate(e.date)}</time><div class="entry-kind">Family diary</div></div><div class="entry-actions"><button class="icon-btn" data-del-diary="${e.id}">✕</button></div></div><p>${esc(e.text)}</p></article>`).join(''):'<div class="empty"><h3>No diary pages yet</h3><p>Your first entry can be one sentence.</p></div>'}
+  function renderMind(){
+    moodRow.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('selected',state.mood.date===todayISO()&&state.mood.value===b.dataset.mood));
+    const list=state.mind.slice().sort((a,b)=>b.created.localeCompare(a.created));mindEntries.innerHTML=list.length?list.map(e=>`<article class="entry"><div class="entry-top"><div><time>${new Intl.DateTimeFormat(undefined,{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).format(new Date(e.created))}</time><div class="entry-kind">Mindspace</div></div><button class="icon-btn" data-del-mind="${e.id}">✕</button></div>${e.text?`<p>${esc(e.text)}</p>`:''}${e.attachment?.type==='image'?`<img src="${e.attachment.data}" alt="Mindspace attachment">`:''}${e.attachment?.type==='audio'?`<audio controls src="${e.attachment.data}"></audio>`:''}</article>`).join(''):'<div class="empty"><h3>Space to think</h3><p>Capture a thought, photo or short voice note when it matters.</p></div>';
+  }
+  function renderMore(){adult1.value=state.profiles.adult1||'';adult2.value=state.profiles.adult2||'';child1.value=state.profiles.child1||'';child2.value=state.profiles.child2||'';commitmentList.innerHTML=state.commitments.length?state.commitments.map(x=>`<div class="mini-row"><strong>${esc(x.name)}</strong><span class="badge">${esc(x.due||'No date')}</span><button class="icon-btn" data-del-commit="${x.id}">✕</button></div>`).join(''):'<div style="color:var(--muted);font-size:.9rem">No recurring items added.</div>'}
+
+  function addTask(name,category,due=''){state.tasks.push({id:uid(),name:name.trim(),category,due,done:false,created:new Date().toISOString()});save();toast('Task added')}
+  quickForm.addEventListener('submit',e=>{e.preventDefault();addTask(quickTask.value,quickCategory.value,quickDue.value);quickTask.value='';quickDue.value=''});
+  categorySections.addEventListener('click',e=>{const add=e.target.closest('[data-add-cat]'),del=e.target.closest('[data-delete]');if(add){dialogCategory.value=add.dataset.addCat;dialogTitle.textContent='Add to '+displayCat(cat(add.dataset.addCat));dialogTaskName.value='';dialogTaskDue.value='';taskDialog.showModal()}if(del){state.tasks=state.tasks.filter(t=>t.id!==del.dataset.delete);save()}});
+  categorySections.addEventListener('change',e=>{if(e.target.matches('[data-toggle]')){const t=state.tasks.find(x=>x.id===e.target.dataset.toggle);if(t){t.done=e.target.checked;save()}}});
+  taskDialogForm.addEventListener('submit',e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();if(dialogTaskName.value.trim()){addTask(dialogTaskName.value,dialogCategory.value,dialogTaskDue.value);taskDialog.close()}});
+  searchInput.addEventListener('input',renderTasks);statusFilter.addEventListener('change',renderTasks);
+  document.querySelectorAll('[data-open-filter]').forEach(b=>b.addEventListener('click',()=>{showView('tasks');const f=b.dataset.openFilter;if(f==='week'){statusFilter.value='open';searchInput.value='';renderTasks();setTimeout(()=>toast('Showing open lists — due dates are highlighted'),30)}else{searchInput.value='';statusFilter.value='open';renderTasks();const target=categories.find(c=>c.group.includes(f));document.querySelector(`[data-add-cat="${target?.id}"]`)?.closest('.category')?.scrollIntoView({behavior:'smooth',block:'start'})}}));
+
+  diaryForm.addEventListener('submit',e=>{e.preventDefault();state.diary.push({id:uid(),date:diaryDate.value,text:diaryText.value.trim(),created:new Date().toISOString()});diaryText.value='';save();toast('Diary entry saved')});
+  diaryEntries.addEventListener('click',e=>{const x=e.target.closest('[data-del-diary]');if(x){state.diary=state.diary.filter(d=>d.id!==x.dataset.delDiary);save()}});
+  moodRow.addEventListener('click',e=>{const b=e.target.closest('[data-mood]');if(!b)return;state.mood={date:todayISO(),value:b.dataset.mood};save();toast('Mood marker saved')});
+  mindImage.addEventListener('change',async()=>{const f=mindImage.files?.[0];if(!f)return;if(f.size>2800000){toast('Please use an image under 2.8 MB');mindImage.value='';return}const data=await fileToData(f);pendingAttachment={type:'image',data,name:f.name};attachmentPreview.textContent='Photo ready: '+f.name;attachmentPreview.classList.add('show')});
+  recordBtn.addEventListener('click',async()=>{if(mediaRecorder?.state==='recording'){mediaRecorder.stop();return}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];mediaRecorder=new MediaRecorder(stream);mediaRecorder.ondataavailable=e=>chunks.push(e.data);mediaRecorder.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(chunks,{type:mediaRecorder.mimeType||'audio/webm'});if(blob.size>2800000){toast('Voice note too large — keep it shorter');recordBtn.textContent='Record voice';recordBtn.classList.remove('recording');return}pendingAttachment={type:'audio',data:await fileToData(blob),name:'voice-note.webm'};attachmentPreview.textContent='Voice note ready';attachmentPreview.classList.add('show');recordBtn.textContent='Record voice';recordBtn.classList.remove('recording')};mediaRecorder.start();recordBtn.textContent='Stop recording';recordBtn.classList.add('recording')}catch{toast('Microphone permission was not available')}});
+  mindForm.addEventListener('submit',e=>{e.preventDefault();const txt=mindText.value.trim();if(!txt&&!pendingAttachment){toast('Add a note, photo or voice clip');return}state.mind.push({id:uid(),text:txt,attachment:pendingAttachment,created:new Date().toISOString()});mindText.value='';mindImage.value='';pendingAttachment=null;attachmentPreview.classList.remove('show');attachmentPreview.textContent='';save();toast('Saved to mindspace')});
+  mindEntries.addEventListener('click',e=>{const x=e.target.closest('[data-del-mind]');if(x){state.mind=state.mind.filter(d=>d.id!==x.dataset.delMind);save()}});
+  function fileToData(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+
+  saveReview.addEventListener('click',()=>{state.weeklyReview=weeklyReview.value;save();toast('Weekly review saved')});
+  downloadReview.addEventListener('click',()=>{const txt=`Family Hub — Weekly Review\n${new Intl.DateTimeFormat(undefined,{dateStyle:'full'}).format(new Date())}\n\n${weeklyReview.value||'(No notes yet)'}\n`;downloadBlob('family-hub-weekly-review.txt',new Blob([txt],{type:'text/plain'}))});
+  saveProfiles.addEventListener('click',()=>{state.profiles={adult1:adult1.value.trim()||'You',adult2:adult2.value.trim()||'Partner',child1:child1.value.trim()||'Child 1',child2:child2.value.trim()||'Child 2'};save();toast('Family labels saved')});
+  commitmentForm.addEventListener('submit',e=>{e.preventDefault();state.commitments.push({id:uid(),name:commitName.value.trim(),due:commitMonth.value.trim()});commitName.value='';commitMonth.value='';save();toast('Household item added')});
+  commitmentList.addEventListener('click',e=>{const x=e.target.closest('[data-del-commit]');if(x){state.commitments=state.commitments.filter(c=>c.id!==x.dataset.delCommit);save()}});
+  function exportBackup(){const payload={schema:'family-hub-v3',exportedAt:new Date().toISOString(),data:state};downloadBlob(`family-hub-backup-${todayISO()}.json`,new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));toast('Backup exported')}
+  exportBtn.addEventListener('click',exportBackup);backupTop.addEventListener('click',exportBackup);
+  importFile.addEventListener('change',async()=>{const f=importFile.files?.[0];if(!f)return;try{const j=JSON.parse(await f.text());const d=j.data||j;if(!d||!Array.isArray(d.tasks))throw new Error();state={...blank(),...d,profiles:{...blank().profiles,...(d.profiles||{})}};save();toast('Backup restored')}catch{toast('That backup could not be read')}finally{importFile.value=''}});
+  resetBtn.addEventListener('click',()=>{if(confirm('Reset all Family Hub data stored in this browser?')){state=blank();localStorage.removeItem(KEY);save();toast('Local data reset')}});
+  function downloadBlob(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));
+  function showView(v){document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v+'View'));window.scrollTo({top:document.querySelector('.utility').offsetTop-6,behavior:'smooth'})}
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;installBtn.hidden=false});installBtn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installBtn.hidden=true});
+  if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+
+  const now=new Date();todayLabel.textContent=new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);diaryDate.value=todayISO();
+  quickCategory.innerHTML=categories.map(c=>`<option value="${c.id}">${esc(displayCat(c))}</option>`).join('');
+  renderAll();
+})();
+</script>
+</body>
+</html>
